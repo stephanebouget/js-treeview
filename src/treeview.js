@@ -78,19 +78,31 @@
 					clickIcon,
 					click;
 				var renderLeaf = function (item) {
+                    console.log("TCL: renderLeaf -> item", item)
 					var leaf = document.createElement('div');
 					var content = document.createElement('div');
+					var icon = document.createElement('mat-icon');
+
 					var text = document.createElement('div');
 					var expando = document.createElement('div');
 
 					leaf.setAttribute('class', 'tree-leaf');
 					content.setAttribute('class', 'tree-leaf-content');
+					icon.setAttribute('class', 'tree-icon mat-icon material-icons');
 					content.setAttribute('data-item', JSON.stringify(item));
 					text.setAttribute('class', 'tree-leaf-text');
+
+					if (item.isLeaf) {
+						icon.textContent = 'web_asset';
+					} else {
+						icon.textContent = item.expanded ? 'folder' : 'folder_open';
+					}
+
 					text.textContent = item.name;
 					expando.setAttribute('class', 'tree-expando ' + (item.expanded ? 'expanded' : ''));
 					expando.textContent = item.expanded ? '-' : '+';
 					content.appendChild(expando);
+					content.appendChild(icon);
 					content.appendChild(text);
 					leaf.appendChild(content);
 					if (item.children && item.children.length > 0) {
@@ -119,7 +131,7 @@
 
 				click = function (e) {
 					console.log("TCL: click -> e", e)
-					
+
 					var parent = (e.target || e.currentTarget).parentNode;
 					forEach(container.querySelectorAll('.tree-leaf-text'), function (node) {
 						var parent = node.parentNode;
@@ -130,16 +142,16 @@
 					var data = JSON.parse(parent.getAttribute('data-item'));
 					var leaves = parent.parentNode.querySelector('.tree-child-leaves');
 					if (leaves) {
-					// 	if (leaves.classList.contains('hidden')) {
-					// 		self.expand(parent, leaves);
-					// 	} else {
-					// 		self.collapse(parent, leaves);
-					// 	}
+						// 	if (leaves.classList.contains('hidden')) {
+						// 		self.expand(parent, leaves);
+						// 	} else {
+						// 		self.collapse(parent, leaves);
+						// 	}
 					} else {
-					// 	emit(self, 'select', {
-					// 		target: e,
-					// 		data: data
-					// 	});
+						// 	emit(self, 'select', {
+						// 		target: e,
+						// 		data: data
+						// 	});
 					}
 				};
 
@@ -192,6 +204,9 @@
 			TreeView.prototype.expand = function (node, leaves, skipEmit) {
 				var expando = node.querySelector('.tree-expando');
 				expando.textContent = '-';
+				var icon = node.querySelector('.tree-icon');
+				// icon.setAttribute('class', 'tree-icon mat-icon material-icons expanded');
+				icon.textContent = 'folder_open';
 				leaves.classList.remove('hidden');
 				if (skipEmit) {
 					return;
@@ -235,6 +250,9 @@
 			TreeView.prototype.collapse = function (node, leaves, skipEmit) {
 				var expando = node.querySelector('.tree-expando');
 				expando.textContent = '+';
+				var icon = node.querySelector('.tree-icon');
+				// icon.setAttribute('class', 'tree-icon mat-icon material-icons');
+				icon.textContent = 'folder';
 				leaves.classList.add('hidden');
 				if (skipEmit) {
 					return;
