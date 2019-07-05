@@ -75,10 +75,9 @@
 			function render(self) {
 				var container = isDOMElement(self.node) ? self.node : document.getElementById(self.node);
 				var leaves = [],
-					clickIcon,
+					clickExpandIcon,
 					click;
 				var renderLeaf = function (item) {
-                    console.log("TCL: renderLeaf -> item", item)
 					var leaf = document.createElement('div');
 					var content = document.createElement('div');
 					var icon = document.createElement('mat-icon');
@@ -93,6 +92,7 @@
 					text.setAttribute('class', 'tree-leaf-text');
 
 					if (item.isLeaf) {
+						icon.classList.add('is-leaf');
 						icon.textContent = 'web_asset';
 					} else {
 						icon.textContent = item.expanded ? 'folder' : 'folder_open';
@@ -155,8 +155,8 @@
 					}
 				};
 
-				clickIcon = function (e) {
-					console.log("TCL: clickIcon -> e", e)
+				clickExpandIcon = function (e) {
+					console.log("TCL: clickExpandIcon -> e", e)
 					var parent = (e.target || e.currentTarget).parentNode;
 					var data = JSON.parse(parent.getAttribute('data-item'));
 					var leaves = parent.parentNode.querySelector('.tree-child-leaves');
@@ -174,12 +174,16 @@
 					}
 				};
 
+				forEach(container.querySelectorAll('.tree-icon'), function (node) {
+					node.onclick = click;
+				});
+
 				forEach(container.querySelectorAll('.tree-leaf-text'), function (node) {
 					node.onclick = click;
 				});
 
 				forEach(container.querySelectorAll('.tree-expando'), function (node) {
-					node.onclick = clickIcon;
+					node.onclick = clickExpandIcon;
 				});
 			}
 
