@@ -15,6 +15,7 @@
 			/** List of events supported by the tree view */
 			var events = [
 				'expand',
+				'init',
 				'expandAll',
 				'collapse',
 				'collapseAll',
@@ -206,6 +207,12 @@
 				this.node = node;
 				this.data = data;
 				render(this);
+
+				var self = this;
+				setTimeout(function() {
+					emit(self, 'init', {});
+				});
+				
 			}
 
 			/**
@@ -253,7 +260,7 @@
 					if (nodes) {
 						var currentNode;
 						forEach(nodes, function (node) {
-							if (node.id === nodeId) {
+							if (node.id === nodeId.toString()) {
 								currentNode = node;
 							}
 						});
