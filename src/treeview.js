@@ -163,7 +163,6 @@
 					};
 
 					clickExpandIcon = function (e) {
-						console.log("TCL: clickExpandIcon -> e", e)
 						var parent = (e.target || e.currentTarget).parentNode;
 						var data = JSON.parse(parent.getAttribute('data-item'));
 						var leaves = parent.parentNode.querySelector('.tree-child-leaves');
@@ -232,29 +231,35 @@
 
 			TreeView.prototype.expandAll = function () {
 				var self = this;
-				var nodes = document.getElementById(self.node).querySelectorAll('.tree-expando');
-				forEach(nodes, function (node) {
-					var parent = node.parentNode;
-					var leaves = parent.parentNode.querySelector('.tree-child-leaves');
-					if (parent && leaves && parent.hasAttribute('data-item')) {
-						self.expand(parent, leaves, true);
-					}
-				});
-				emit(this, 'expandAll', {});
+				var el = document.getElementById(self.node);
+				if (el) {
+					var nodes = el.querySelectorAll('.tree-expando');
+					forEach(nodes, function (node) {
+						var parent = node.parentNode;
+						var leaves = parent.parentNode.querySelector('.tree-child-leaves');
+						if (parent && leaves && parent.hasAttribute('data-item')) {
+							self.expand(parent, leaves, true);
+						}
+					});
+					emit(this, 'expandAll', {});
+				}
 			};
 
 			TreeView.prototype.selectNode = function (nodeId) {
 				var self = this;
-				var nodes = document.getElementById(self.node).querySelectorAll('.tree-leaf-text');
-				if (nodes) {
-					var currentNode;
-					forEach(nodes, function (node) {
-						if (node.id === nodeId) {
-							currentNode = node;
+				var el = document.getElementById(self.node);
+				if (el) {
+					var nodes = el.querySelectorAll('.tree-leaf-text');
+					if (nodes) {
+						var currentNode;
+						forEach(nodes, function (node) {
+							if (node.id === nodeId) {
+								currentNode = node;
+							}
+						});
+						if (currentNode) {
+							currentNode.click();
 						}
-					});
-					if (currentNode) {
-						currentNode.click();
 					}
 				}
 			};
