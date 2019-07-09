@@ -209,10 +209,10 @@
 				render(this);
 
 				var self = this;
-				setTimeout(function() {
+				setTimeout(function () {
 					emit(self, 'init', {});
 				});
-				
+
 			}
 
 			/**
@@ -230,9 +230,12 @@
 				if (skipEmit) {
 					return;
 				}
+				var data = JSON.parse(node.getAttribute('data-item'));
+
 				emit(this, 'expand', {
 					target: node,
-					leaves: leaves
+					leaves: leaves,
+					data: data
 				});
 			};
 
@@ -286,9 +289,12 @@
 				if (skipEmit) {
 					return;
 				}
+				var data = JSON.parse(node.getAttribute('data-item'));
+
 				emit(this, 'collapse', {
 					target: node,
-					leaves: leaves
+					leaves: leaves,
+					data: data
 				});
 			};
 
