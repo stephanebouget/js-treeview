@@ -137,7 +137,6 @@
 					}).join('');
 
 					click = function (e) {
-						console.log("TCL: click -> e", e)
 
 						var parent = (e.target || e.currentTarget).parentNode;
 						forEach(clonedContainer.querySelectorAll('.tree-leaf-text'), function (node) {
@@ -157,10 +156,15 @@
 						} else {
 
 						}
-						emit(self, 'select', {
-							target: e,
-							data: data
-						});
+
+						// If event do not comes from user (isTrusted) do not propagate to avoid loop
+						// its an onchange event
+						if (e.isTrusted) {
+							emit(self, 'select', {
+								target: e,
+								data: data
+							});
+						}
 					};
 
 					clickExpandIcon = function (e) {
