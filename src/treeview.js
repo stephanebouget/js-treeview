@@ -137,7 +137,7 @@
 					}).join('');
 
 					click = function (e) {
-
+						
 						var parent = (e.target || e.currentTarget).parentNode;
 						forEach(clonedContainer.querySelectorAll('.tree-leaf-text'), function (node) {
 							var parent = node.parentNode;
@@ -159,7 +159,7 @@
 
 						// If event do not comes from user (isTrusted) do not propagate to avoid loop
 						// its an onchange event
-						if (e.isTrusted) {
+						if (e.target.dataset.propagateEvent !== 'true') {
 							emit(self, 'select', {
 								target: e,
 								data: data
@@ -259,7 +259,7 @@
 				}
 			};
 
-			TreeView.prototype.selectNode = function (nodeId) {
+			TreeView.prototype.selectNode = function (nodeId, propagateEvent = false) {
 				var self = this;
 				var el = document.getElementById(self.node);
 				if (el) {
@@ -272,6 +272,7 @@
 							}
 						});
 						if (currentNode) {
+							currentNode.dataset.propagateEvent = propagateEvent;
 							currentNode.click();
 						}
 					}
