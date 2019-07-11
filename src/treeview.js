@@ -17,6 +17,7 @@
 				'expand',
 				'init',
 				'expandAll',
+				'expandAllNodeChildren',
 				'collapse',
 				'collapseAll',
 				'selectNode',
@@ -92,6 +93,7 @@
 						var expando = document.createElement('div');
 
 						leaf.setAttribute('class', 'tree-leaf');
+						leaf.setAttribute('id', 'tree-leaf-' + item.id);
 						content.setAttribute('class', 'tree-leaf-content');
 						icon.setAttribute('class', 'tree-icon mat-icon material-icons');
 						content.setAttribute('data-item', JSON.stringify(item));
@@ -137,7 +139,8 @@
 					}).join('');
 
 					click = function (e) {
-						
+                    console.log("TCL: click -> e", e)
+
 						var parent = (e.target || e.currentTarget).parentNode;
 						forEach(clonedContainer.querySelectorAll('.tree-leaf-text'), function (node) {
 							var parent = node.parentNode;
@@ -159,12 +162,13 @@
 
 						// If event do not comes from user (isTrusted) do not propagate to avoid loop
 						// its an onchange event
-						if (e.target.dataset.propagateEvent !== 'true') {
+						// if (e.target.dataset.propagateEvent === undefined || e.target.dataset.propagateEvent === 'true') {
+							// e.target.dataset = null;
 							emit(self, 'select', {
 								target: e,
 								data: data
 							});
-						}
+						// }
 					};
 
 					clickExpandIcon = function (e) {
@@ -225,6 +229,7 @@
 			 * @param {DOMElement} leaves The leaves wrapper element
 			 */
 			TreeView.prototype.expand = function (node, leaves, skipEmit) {
+				var self = this;
 				var expando = node.querySelector('.tree-expando');
 				expando.textContent = '-';
 				var icon = node.querySelector('.tree-icon');
@@ -241,6 +246,32 @@
 					leaves: leaves,
 					data: data
 				});
+
+				// if (node.children && node.children.length > 0) {
+				// 	for (var i = 0; i < node.children.length; i++) {
+
+				// 		var childParent = node.children[i];
+				// 		var childLeaves = parent.parentNode.querySelector('.tree-child-leaves');
+
+				// 		self.expand(childParent, childLeaves, false);
+				// 	}
+				// }
+			};
+
+			TreeView.prototype.expandAllNodeChildren = function (nodeId) {
+				var self = this;
+				var el = document.getElementById('tree-leaf-'+nodeId);
+				if (el) {
+					var nodes = el.querySelectorAll('.tree-expando');
+					forEach(nodes, function (node) {
+						var parent = node.parentNode;
+						var leaves = parent.parentNode.querySelector('.tree-child-leaves');
+						if (parent && leaves && parent.hasAttribute('data-item')) {
+							self.expand(parent, leaves, true);
+						}
+					});
+					emit(this, 'expandAllNodeChildren', {});
+				}
 			};
 
 			TreeView.prototype.expandAll = function () {
@@ -259,7 +290,7 @@
 				}
 			};
 
-			TreeView.prototype.selectNode = function (nodeId, propagateEvent = false) {
+			TreeView.prototype.selectNode = function (nodeId, propagateEvent = true) {
 				var self = this;
 				var el = document.getElementById(self.node);
 				if (el) {
@@ -271,8 +302,7 @@
 								currentNode = node;
 							}
 						});
-						if (currentNode) {
-							currentNode.dataset.propagateEvent = propagateEvent;
+						if (currentNode && propagateEvent) {
 							currentNode.click();
 						}
 					}
