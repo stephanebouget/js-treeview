@@ -107,7 +107,7 @@
 							icon.textContent = item.expanded ? 'folder' : 'folder_open';
 						}
 
-						text.textContent = item.name;
+						text.textContent = item.name + ' - ' + JSON.stringify(item.matrixIndex);
 						expando.setAttribute('class', 'tree-expando ' + (item.expanded ? 'expanded' : ''));
 						expando.textContent = item.expanded ? '-' : '+';
 						content.appendChild(expando);
