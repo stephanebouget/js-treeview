@@ -61,9 +61,9 @@
 				if (events.indexOf(name) > -1) {
 					if (instance.handlers[name] && instance.handlers[name] instanceof Array) {
 						forEach(instance.handlers[name], function (handle) {
-							window.setTimeout(function () {
+							// window.setTimeout(function () {
 								handle.callback.apply(handle.context, args);
-							}, 0);
+							// }, 0);
 						});
 					}
 				} else {
@@ -217,9 +217,9 @@
 				render(this);
 
 				var self = this;
-				setTimeout(function () {
+				// setTimeout(function () {
 					emit(self, 'init', {});
-				});
+				// });
 
 			}
 
