@@ -217,9 +217,9 @@
 				render(this);
 
 				var self = this;
-				// setTimeout(function () {
+				setTimeout(function () {
 					emit(self, 'init', {});
-				// });
+				});
 
 			}
 
