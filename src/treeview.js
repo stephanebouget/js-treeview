@@ -62,7 +62,7 @@
 					if (instance.handlers[name] && instance.handlers[name] instanceof Array) {
 						forEach(instance.handlers[name], function (handle) {
 							// window.setTimeout(function () {
-								handle.callback.apply(handle.context, args);
+							handle.callback.apply(handle.context, args);
 							// }, 0);
 						});
 					}
@@ -85,6 +85,7 @@
 						click;
 
 					var renderLeaf = function (item) {
+
 						var leaf = document.createElement('div');
 						var content = document.createElement('div');
 						var icon = document.createElement('mat-icon');
@@ -104,12 +105,13 @@
 							icon.classList.add('is-leaf');
 							icon.textContent = 'web_asset';
 						} else {
-							icon.textContent = item.expanded ? 'folder' : 'folder_open';
+							icon.textContent = item.isCollapsed ? 'folder' : 'folder_open';
 						}
 
 						text.textContent = item.name;
-						expando.setAttribute('class', 'tree-expando ' + (item.expanded ? 'expanded' : ''));
-						expando.textContent = item.expanded ? '-' : '+';
+						expando.setAttribute('class', 'tree-expando ' + (item.isCollapsed ? '' : 'expanded'));
+						expando.setAttribute('id', 'tree-expando-' + item.id);
+						expando.textContent = item.isCollapsed ? '+' : '-';
 						content.appendChild(expando);
 						content.appendChild(icon);
 						content.appendChild(text);
@@ -121,7 +123,7 @@
 								var childLeaf = renderLeaf(child);
 								children.appendChild(childLeaf);
 							});
-							if (!item.expanded) {
+							if (item.isCollapsed) {
 								children.classList.add('hidden');
 							}
 							leaf.appendChild(children);
@@ -139,7 +141,7 @@
 					}).join('');
 
 					click = function (e) {
-                    console.log("TCL: click -> e", e)
+						console.log("TCL: click -> e", e)
 
 						var parent = (e.target || e.currentTarget).parentNode;
 						forEach(clonedContainer.querySelectorAll('.tree-leaf-text'), function (node) {
@@ -163,11 +165,11 @@
 						// If event do not comes from user (isTrusted) do not propagate to avoid loop
 						// its an onchange event
 						// if (e.target.dataset.propagateEvent === undefined || e.target.dataset.propagateEvent === 'true') {
-							// e.target.dataset = null;
-							emit(self, 'select', {
-								target: e,
-								data: data
-							});
+						// e.target.dataset = null;
+						emit(self, 'select', {
+							target: e,
+							data: data
+						});
 						// }
 					};
 
@@ -260,7 +262,7 @@
 
 			TreeView.prototype.expandAllNodeChildren = function (nodeId) {
 				var self = this;
-				var el = document.getElementById('tree-leaf-'+nodeId);
+				var el = document.getElementById('tree-leaf-' + nodeId);
 				if (el) {
 					var nodes = el.querySelectorAll('.tree-expando');
 					forEach(nodes, function (node) {
@@ -309,12 +311,36 @@
 				}
 			};
 
+			TreeView.prototype.toggleNode = function (nodeId, state, propagateEvent = true) {
+
+				var self = this;
+				var el = document.getElementById(self.node);
+				if (el) {
+					var nodes = el.querySelectorAll('.tree-expando');
+					if (nodes) {
+						var currentNode;
+						forEach(nodes, function (node) {
+							if (node.id === 'tree-expando-' + nodeId.toString()) {
+								currentNode = node;
+							}
+						});
+						if (currentNode && propagateEvent) {
+							if ((state === 'collapse' && currentNode.textContent === '-') ||
+								state === 'expand' && currentNode.textContent === '+') {
+								currentNode.click();
+							}
+						}
+					}
+				}
+			};
+
 			/**
 			 * Collapses a leaflet by the expando or the leaf text
 			 * @param {DOMElement} node The parent node that contains the leaves
 			 * @param {DOMElement} leaves The leaves wrapper element
 			 */
 			TreeView.prototype.collapse = function (node, leaves, skipEmit) {
+				// console.log("TCL: TreeView.prototype.collapse -> node, leaves", node, leaves)
 				var expando = node.querySelector('.tree-expando');
 				expando.textContent = '+';
 				var icon = node.querySelector('.tree-icon');
