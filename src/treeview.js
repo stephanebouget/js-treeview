@@ -141,7 +141,6 @@
 					}).join('');
 
 					click = function (e) {
-						console.log("TCL: click -> e", e)
 
 						var parent = (e.target || e.currentTarget).parentNode;
 						forEach(clonedContainer.querySelectorAll('.tree-leaf-text'), function (node) {
@@ -296,6 +295,7 @@
 				var self = this;
 				var el = document.getElementById(self.node);
 				if (el) {
+					
 					var nodes = el.querySelectorAll('.tree-leaf-text');
 					if (nodes) {
 						var currentNode;
