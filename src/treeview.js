@@ -104,6 +104,7 @@
 						if (item.isLeaf) {
 							icon.classList.add('is-leaf');
 							icon.textContent = 'web_asset';
+							icon.className += ' web_asset';
 						} else {
 							icon.textContent = item.isCollapsed ? 'folder' : 'folder_open';
 						}
