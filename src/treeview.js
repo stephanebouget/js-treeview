@@ -307,9 +307,15 @@
 						});
 						if (currentNode && propagateEvent) {
 							currentNode.click();
+							self.currentSelectedNodeId = nodeId;
 						}
 					}
 				}
+			};
+
+			TreeView.prototype.getSelectedNodeId = function () {
+				var self = this;
+				return self.currentSelectedNodeId;
 			};
 
 			TreeView.prototype.toggleNode = function (nodeId, state, propagateEvent = true) {
