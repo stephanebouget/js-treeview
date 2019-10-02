@@ -113,10 +113,15 @@
 						expando.setAttribute('class', 'tree-expando ' + (item.isCollapsed ? '' : 'expanded'));
 						expando.setAttribute('id', 'tree-expando-' + item.id);
 						expando.textContent = item.isCollapsed ? '+' : '-';
-						content.appendChild(expando);
+						if (!self.hideExpando) {
+							content.appendChild(expando);
+						}
 						content.appendChild(icon);
 						content.appendChild(text);
 						leaf.appendChild(content);
+						if (item.isTruncated) {
+							expando.classList.add('hidden');
+						}
 						if (item.children && item.children.length > 0) {
 							var children = document.createElement('div');
 							children.setAttribute('class', 'tree-child-leaves');
@@ -216,6 +221,12 @@
 				this.handlers = {};
 				this.node = node;
 				this.data = data;
+
+				this.hideExpando = false;
+				if (this.data[0].nbClusters > 200) {
+					this.hideExpando = true;
+				}
+
 				render(this);
 
 				var self = this;
