@@ -160,7 +160,7 @@
 						inputForm.setAttribute('class', 'tree-leaf-text-input');
 
 						var input = document.createElement('input');
-						input.setAttribute('placeholder', 'Edit name');
+						input.setAttribute('placeholder', node.innerHTML);
 
 						var iconAccept = document.createElement('mat-icon');
 						iconAccept.setAttribute('class', 'edit-icons mat-icon material-icons');
