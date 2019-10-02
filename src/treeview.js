@@ -184,6 +184,7 @@
 							// emit event
 							emit(self, 'updateNodeName', {
 								target: node.innerText,
+								isLeaf: data.isLeaf,
 								oldName: oldName,
 								newName: newName
 							});
