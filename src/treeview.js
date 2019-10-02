@@ -16,6 +16,7 @@
 			var events = [
 				'expand',
 				'init',
+				'updateNodeName',
 				'expandAll',
 				'expandAllNodeChildren',
 				'collapse',
@@ -82,6 +83,8 @@
 					container.parentNode.replaceChild(clonedContainer, container);
 					var leaves = [],
 						clickExpandIcon,
+						dblclick,
+						removeAllEditInputs,
 						click;
 
 					var renderLeaf = function (item) {
@@ -146,9 +149,89 @@
 						return leaf.outerHTML;
 					}).join('');
 
+					dblclick = function (e) {
+
+						var parent = (e.target || e.currentTarget).parentNode;
+
+						var node = e.target;
+						node.style.display = 'none';
+
+						var inputForm = document.createElement('div');
+						inputForm.setAttribute('class', 'tree-leaf-text-input');
+
+						var input = document.createElement('input');
+						input.setAttribute('placeholder', 'Edit name');
+
+						var iconAccept = document.createElement('mat-icon');
+						iconAccept.setAttribute('class', 'edit-icons mat-icon material-icons');
+						iconAccept.textContent = 'check_circle_outline';
+						iconAccept.onclick = function (e) {
+
+							var oldName = node.innerHTML;
+							var newName = input.value;
+
+							// change current node name
+							node.innerHTML = newName;
+							node.innerText = newName;
+
+							// change data-item object
+							var data = JSON.parse(parent.getAttribute('data-item'));
+							console.log("TCL: iconAccept.onclick -> data", data)
+							data.cluster = newName;
+							data.name = newName;
+							parent.setAttribute('data-item', JSON.stringify(data));
+
+							// emit event
+							emit(self, 'updateNodeName', {
+								target: node.innerText,
+								oldName: oldName,
+								newName: newName
+							});
+
+							// remove input
+							removeAllEditInputs();
+						};
+
+						input.addEventListener("keyup", function (event) {
+							// Number 13 is the "Enter" key on the keyboard
+							if (event.keyCode === 13) {
+								event.preventDefault();
+								// Trigger the button element with a click
+								iconAccept.click();
+							}
+						});
+
+						var iconCancel = document.createElement('mat-icon');
+						iconCancel.setAttribute('class', 'edit-icons mat-icon material-icons');
+						iconCancel.textContent = 'cancel';
+						iconCancel.onclick = function () {
+							removeAllEditInputs();
+						};
+
+						inputForm.appendChild(input);
+						inputForm.appendChild(iconCancel);
+						inputForm.appendChild(iconAccept);
+
+						parent.appendChild(inputForm);
+
+						input.focus();
+
+					};
+
+					removeAllEditInputs = function () {
+						forEach(clonedContainer.querySelectorAll('.tree-leaf-text'), function (node) {
+							node.style.display = 'block';
+						});
+						forEach(clonedContainer.querySelectorAll('.tree-leaf-text-input'), function (node) {
+							node.remove();
+						});
+					};
+
 					click = function (e) {
 
 						var parent = (e.target || e.currentTarget).parentNode;
+						removeAllEditInputs();
+
 						forEach(clonedContainer.querySelectorAll('.tree-leaf-text'), function (node) {
 							var parent = node.parentNode;
 							parent.classList.remove("selected");
@@ -171,6 +254,7 @@
 						// its an onchange event
 						// if (e.target.dataset.propagateEvent === undefined || e.target.dataset.propagateEvent === 'true') {
 						// e.target.dataset = null;
+
 						emit(self, 'select', {
 							target: e,
 							data: data
@@ -202,6 +286,10 @@
 
 					forEach(clonedContainer.querySelectorAll('.tree-leaf-text'), function (node) {
 						node.onclick = click;
+					});
+
+					forEach(clonedContainer.querySelectorAll('.tree-leaf-text'), function (node) {
+						node.ondblclick = dblclick;
 					});
 
 					forEach(clonedContainer.querySelectorAll('.tree-expando'), function (node) {
@@ -307,7 +395,7 @@
 				var self = this;
 				var el = document.getElementById(self.node);
 				if (el) {
-					
+
 					var nodes = el.querySelectorAll('.tree-leaf-text');
 					if (nodes) {
 						var currentNode;
