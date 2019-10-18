@@ -116,7 +116,7 @@
 						expando.setAttribute('class', 'tree-expando ' + (item.isCollapsed ? '' : 'expanded'));
 						expando.setAttribute('id', 'tree-expando-' + item.id);
 						expando.textContent = item.isCollapsed ? '+' : '-';
-						if (!self.hideExpando) {
+						if (!item.isUnfoldedByDefault) {
 							content.appendChild(expando);
 						}
 						content.appendChild(icon);
@@ -312,9 +312,9 @@
 				this.data = data;
 
 				this.hideExpando = false;
-				if (this.data[0].nbClusters > 200) {
-					this.hideExpando = true;
-				}
+				// if (this.data[0].nbClusters > 200) {
+				// 	this.hideExpando = true;
+				// }
 
 				render(this);
 
