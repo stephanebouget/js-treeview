@@ -112,7 +112,7 @@
 							icon.textContent = item.isCollapsed ? 'folder' : 'folder_open';
 						}
 
-						text.textContent = item.name;
+						text.textContent = item.displayName;
 						expando.setAttribute('class', 'tree-expando ' + (item.isCollapsed ? '' : 'expanded'));
 						expando.setAttribute('id', 'tree-expando-' + item.id);
 						expando.textContent = item.isCollapsed ? '+' : '-';
@@ -167,7 +167,6 @@
 						iconAccept.textContent = 'check_circle_outline';
 						iconAccept.onclick = function (e) {
 
-							var oldName = node.innerHTML;
 							var newName = input.value;
 
 							// change current node name
@@ -176,16 +175,14 @@
 
 							// change data-item object
 							var data = JSON.parse(parent.getAttribute('data-item'));
-							console.log("TCL: iconAccept.onclick -> data", data)
-							data.cluster = newName;
-							data.name = newName;
+							data.displayName = newName;
 							parent.setAttribute('data-item', JSON.stringify(data));
 
 							// emit event
 							emit(self, 'updateNodeName', {
 								target: node.innerText,
 								isLeaf: data.isLeaf,
-								oldName: oldName,
+								name: data.name,
 								newName: newName
 							});
 
