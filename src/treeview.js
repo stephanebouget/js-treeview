@@ -237,27 +237,10 @@
 						parent.classList.add("selected");
 
 						var data = JSON.parse(parent.getAttribute('data-item'));
-						var leaves = parent.parentNode.querySelector('.tree-child-leaves');
-						if (leaves) {
-							// 	if (leaves.classList.contains('hidden')) {
-							// 		self.expand(parent, leaves);
-							// 	} else {
-							// 		self.collapse(parent, leaves);
-							// 	}
-						} else {
-
-						}
-
-						// If event do not comes from user (isTrusted) do not propagate to avoid loop
-						// its an onchange event
-						// if (e.target.dataset.propagateEvent === undefined || e.target.dataset.propagateEvent === 'true') {
-						// e.target.dataset = null;
-
 						emit(self, 'select', {
 							target: e,
 							data: data
 						});
-						// }
 					};
 
 					clickExpandIcon = function (e) {
@@ -402,9 +385,18 @@
 								currentNode = node;
 							}
 						});
+						self.currentSelectedNodeId = nodeId;
+
 						if (currentNode && propagateEvent) {
+							// Click the node to select it and propagate event
 							currentNode.click();
-							self.currentSelectedNodeId = nodeId;
+						} else {
+							// Select node withou click propagation
+							forEach(nodes, function (node) {
+								var parent = node.parentNode;
+								parent.classList.remove("selected");
+							});
+							currentNode.parentNode.classList.add("selected");
 						}
 					}
 				}
